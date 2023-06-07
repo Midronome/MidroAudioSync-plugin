@@ -42,7 +42,7 @@ public:
     
     void doUpdateMusicalContextContent (juce::ARAMusicalContext* musicalContext, juce::ARAContentUpdateScopes scopeFlags) override;
     
-    bool getTickAndBarLengthAtPosition(int64_t currentPos, double& tickLength, uint& barLength);
+    bool getTickAndBarLengthAtPosition(int64_t currentPos, double& tickLength, unsigned int& barLength);
     
     int64_t getNextTickPositionInSamples(int64_t currentPos, bool& lastTickRightBeforeABar);
     
@@ -63,15 +63,6 @@ public:
     static double halfASampleLength;
     
     
-private:
-    
-    void selectMusicalContext (juce::ARAMusicalContext* newSelectedMusicalContext);
-    
-    
-    void rebuildTickMap();
-    
-    
-    
     // Helper functions to compare double (time in seconds) with a precision of 0.5/sampleRate (e.g. about 10us for 48kHz)
     static bool sampleScaleLessThan(double a, double b) {
         return (a < b && !sampleScaleEquals(a, b));
@@ -81,12 +72,20 @@ private:
     }
     
     
+private:
+    
+    void selectMusicalContext (juce::ARAMusicalContext* newSelectedMusicalContext);
+    
+    
+    void rebuildTickMap();
+    
+    
     
     struct TickMapElement {
         double startPosition; // start position in seconds
         double tickLength; // tick length in seconds
-        uint barLength; // bar length in amount of ticks
-        uint tickOffset; // in case this tick is not at the beginning of a bar, amount of ticks past the beginning of the bar
+        unsigned int barLength; // bar length in amount of ticks
+        unsigned int tickOffset; // in case this tick is not at the beginning of a bar, amount of ticks past the beginning of the bar
         
         
         TickMapElement()
@@ -94,7 +93,7 @@ private:
         {
         }
         
-        TickMapElement(double startPosition, double tickLength = 0, uint barLength = 0, uint tickOffset = 0)
+        TickMapElement(double startPosition, double tickLength = 0, unsigned int barLength = 0, unsigned int tickOffset = 0)
             : startPosition(startPosition), tickLength(tickLength), barLength(barLength), tickOffset(tickOffset)
         {
         }

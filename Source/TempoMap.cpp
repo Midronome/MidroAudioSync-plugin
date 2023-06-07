@@ -70,7 +70,7 @@ void TempoMap::doUpdateMusicalContextContent (ARAMusicalContext* musicalContext,
         rebuildTickMap();
 }
 
-bool TempoMap::getTickAndBarLengthAtPosition(int64_t currentPos, double& tickLength, uint& barLength) { // tick length in seconds
+bool TempoMap::getTickAndBarLengthAtPosition(int64_t currentPos, double& tickLength, unsigned int& barLength) { // tick length in seconds
     if (_tickMap.empty())
         return false;
     
@@ -99,7 +99,7 @@ int64_t TempoMap::getNextTickPositionInSamples(int64_t currentPos, bool& lastTic
     
     
     double tickPos = it->startPosition;
-    uint tickIdx = it->tickOffset;
+    unsigned int tickIdx = it->tickOffset;
     
     if (sampleScaleLessThan(currentPosInTime, tickPos)) { // this could happen with a positive delay or when doing pre-roll (currentPos < 0)
         while (sampleScaleLessThan(currentPosInTime, tickPos - it->tickLength)) {
@@ -175,19 +175,19 @@ void TempoMap::rebuildTickMap()
              * we build a temporary vector of time signature changes containing {quarterPosition, barLength (in ticks)}
              * we also check they all are on a bar -> if not we "quantize" them
              */
-            struct TimeSigChange { uint quarterPosition; uint barLength; };
+            struct TimeSigChange { unsigned int quarterPosition; unsigned int barLength; };
             std::vector<TimeSigChange> timeSigChanges;
-            uint previousQuartersPerBar = 0;
-            uint previousQuarterPos = 0;
+            unsigned int previousQuartersPerBar = 0;
+            unsigned int previousQuarterPos = 0;
             for (ARA::ARAInt32 i = 0 ; i < barSigReader.getEventCount() ; i++) {
-                uint quartersPerBar = (4 * barSigReader[i].numerator) / barSigReader[i].denominator;
-                uint quarterPos = static_cast<uint>(round(barSigReader[i].position));
+                unsigned int quartersPerBar = (4 * barSigReader[i].numerator) / barSigReader[i].denominator;
+                unsigned int quarterPos = static_cast<unsigned int>(round(barSigReader[i].position));
                 
                 if (quartersPerBar == 0)
                     quartersPerBar = 1; // in case of very tiny time signatures like 1/8 or 1/16, etc => we change it to 1/4
                 
                 if (previousQuartersPerBar != 0) {
-                    uint remainder = (quarterPos - previousQuarterPos) % previousQuartersPerBar;
+                    unsigned int remainder = (quarterPos - previousQuarterPos) % previousQuartersPerBar;
                     if (remainder != 0)
                         quarterPos += previousQuartersPerBar - remainder; // we quantize to the next bar
                 }
@@ -267,8 +267,8 @@ void TempoMap::rebuildTickMap()
             _tickMap.clear();
             int timeSigChangeIdx = 0;
             double tickPos = 0; // we assume tempoChanges[0].timePosition = 0
-            uint tickIdx = 0; // same
-            uint tickOffset = 0;
+            unsigned int tickIdx = 0; // same
+            unsigned int tickOffset = 0;
             
             for (int i = 0 ; i < tempoChanges.size() ; i++) {
                 

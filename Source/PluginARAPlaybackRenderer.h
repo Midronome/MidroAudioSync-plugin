@@ -70,7 +70,7 @@ private:
         
     //==============================================================================
     double sampleRate = 44100.0;
-    int maximumSamplesPerBlock = 4096;
+    unsigned int maximumSamplesPerBlock = 4096;
     int numChannels = 1;
     bool useBufferedAudioSourceReader = true;
     
@@ -81,14 +81,14 @@ private:
     float* outputData = NULL;
     
     
-    uint missingEndOfLowTick = 0;
-    uint missingEndOfHighTick = 0;
+    unsigned int missingEndOfLowTick = 0;
+    unsigned int missingEndOfHighTick = 0;
     
-    uint samplesSinceLastTick = 0; // to avoid sending two ticks "too close" to each other
-    uint minSamplesSinceLastTick = 0;
-    uint maxSamplesSinceLastTick = 0;
+    unsigned int samplesSinceLastTick = 0; // to avoid sending two ticks "too close" to each other
+    unsigned int minSamplesSinceLastTick = 0;
+    unsigned int maxSamplesSinceLastTick = 0;
     
-    uint currentTickIndex = 0;
+    unsigned int currentTickIndex = 0;
     
     
     

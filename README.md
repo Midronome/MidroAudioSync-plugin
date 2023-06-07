@@ -17,8 +17,8 @@ The plugin is based around the [JUCE framework](https://juce.com/), the Projucer
 
 To compile it, you will need:
 * The JUCE framework and the Projucer - [more info](https://juce.com/download/)
-* An IDE: Xcode on Mac, Code::Blocks on Windows
-* The ARA_SDK - [download v2.2.0](https://github.com/Celemony/ARA_SDK/releases/tag/releases%2F2.2.0), unpack it, and edit the "_ARA SDK Folder_" configuration in the Projucer project accordingly
+* An IDE: Xcode on Mac, Visual Studio 2022 on Windows
+* The ARA_SDK - [download v2.2.0](https://github.com/Celemony/ARA_SDK/releases/tag/releases%2F2.2.0), unpack it, and edit accordingly the "_ARA SDK Folder_" configuration in the "_Exporters_" in the Projucer project
 
 
 Please write any questions/comments/problems on [the Midronome Forum topic](https://forum.midronome.com/viewtopic.php?t=221).

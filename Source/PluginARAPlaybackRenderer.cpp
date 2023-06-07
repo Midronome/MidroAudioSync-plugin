@@ -42,14 +42,14 @@ void MidroAudioSyncPlaybackRenderer::prepareToPlay (double sampleRateIn, int max
 {
     numChannels = numChannelsIn;
     sampleRate = sampleRateIn;
-    maximumSamplesPerBlock = maximumSamplesPerBlockIn;
+    maximumSamplesPerBlock = (unsigned int)maximumSamplesPerBlockIn;
     useBufferedAudioSourceReader = alwaysNonRealtime == AlwaysNonRealtime::no;
     
     if (outputData != NULL)
         delete[] outputData;
     
     outputData = new float[maximumSamplesPerBlock];
-    for (int i = 0 ; i < maximumSamplesPerBlock ; i++)
+    for (unsigned int i = 0 ; i < maximumSamplesPerBlock ; i++)
         outputData[i] = 0.0f;
     
     TempoMap::setSampleRate(sampleRate);
@@ -58,10 +58,10 @@ void MidroAudioSyncPlaybackRenderer::prepareToPlay (double sampleRateIn, int max
     missingEndOfHighTick = 0;
     
     // 0.006242976651267 seconds = tick length of a tempo of 400.45 BPM
-    minSamplesSinceLastTick = static_cast<uint>(ceil(0.006242976651267 * sampleRate)); // ceil for a tempo < 400.45
+    minSamplesSinceLastTick = static_cast<unsigned int>(ceil(0.006242976651267 * sampleRate)); // ceil for a tempo < 400.45
     
     // 0.084602368866328 seconds = tick length of a tempo of 29.55 BPM
-    maxSamplesSinceLastTick = static_cast<uint>(floor(0.084602368866328 * sampleRate)); // floor for a tempo > 29.55
+    maxSamplesSinceLastTick = static_cast<unsigned int>(floor(0.084602368866328 * sampleRate)); // floor for a tempo > 29.55
     samplesSinceLastTick = minSamplesSinceLastTick;
     
     currentTickIndex = 0;
@@ -80,7 +80,7 @@ bool MidroAudioSyncPlaybackRenderer::processBlock (AudioBuffer<float>& buffer,
                                                        AudioProcessor::Realtime realtime,
                                                        const AudioPlayHead::PositionInfo& positionInfo) noexcept
 {
-    const auto numSamples = buffer.getNumSamples();
+    const auto numSamples = (unsigned int)(buffer.getNumSamples());
     jassert (numSamples <= maximumSamplesPerBlock);
     jassert (numChannels == buffer.getNumChannels());
     jassert (realtime == AudioProcessor::Realtime::no || useBufferedAudioSourceReader);
@@ -90,19 +90,22 @@ bool MidroAudioSyncPlaybackRenderer::processBlock (AudioBuffer<float>& buffer,
     bool success = true;
     
     if (!isPlaying && !sendSignalAlways) {
-        for (int i = 0 ; i < numSamples ; i++)
+        for (unsigned int i = 0 ; i < numSamples ; i++)
             outputData[i] = 0.0f;
     }
     
     else {
-        uint i = 0;
+        unsigned int i = 0;
         int64_t nextTick = 0;
         bool lastTickRightBeforeABar = false;
         
         double tickLength = 0.0; // in seconds
-        uint barLength = 0;
+        unsigned int barLength = 0;
         tempoMap->getTickAndBarLengthAtPosition(startTimeInSamples, tickLength, barLength);
 
+        
+        double nextTickInSeconds = -(((double)(samplesSinceLastTick))/sampleRate); // we start at "minus samplesSinceLastTick" position
+        
         
         while (i < numSamples && missingEndOfLowTick > 0) {
             outputData[i++] = MidroAudioSyncPlaybackRenderer::lowTickSamples[LOW_TICK_LENGTH-missingEndOfLowTick];
@@ -117,7 +120,9 @@ bool MidroAudioSyncPlaybackRenderer::processBlock (AudioBuffer<float>& buffer,
         while (i < numSamples) {
             
             if (!isPlaying) {
-                nextTick = static_cast<int64_t>((tickLength - (((double)samplesSinceLastTick)/sampleRate))*sampleRate);
+                nextTickInSeconds += tickLength;
+                nextTick = static_cast<int64_t>(nextTickInSeconds*sampleRate);
+                
                 lastTickRightBeforeABar = false;
                 if (currentTickIndex >= barLength-1)
                     lastTickRightBeforeABar = true;
@@ -126,14 +131,14 @@ bool MidroAudioSyncPlaybackRenderer::processBlock (AudioBuffer<float>& buffer,
                 nextTick = tempoMap->getNextTickPositionInSamples(startTimeInSamples + i, lastTickRightBeforeABar) - startTimeInSamples;
             }
             
-            // that last conditon (maxSamplesSinceLastTick) will make sure we always send ticks to a tempo >= 30 to maintain sync at all times
+            // that last conditon (maxSamplesSinceLastTick) will make sure we always send ticks to a tempo >= 29.55bpm to maintain sync at all times
             while (i < numSamples && i < nextTick && samplesSinceLastTick < maxSamplesSinceLastTick) {
                 outputData[i++] = 0.0f;
                 samplesSinceLastTick++;
             }
             
             if (i < numSamples) {
-                if (samplesSinceLastTick < minSamplesSinceLastTick) { // sending this tick would mean tempo>400.55 => losing sync on the Midronome
+                if (samplesSinceLastTick < minSamplesSinceLastTick) { // sending this tick would mean tempo > 400.55bpm => losing sync on the Midronome
                     outputData[i++] = 0.0f; // we ignore this tick and next call to getNextTickPositionInSamples() will send the next tick
                     samplesSinceLastTick++;
                 }
@@ -171,7 +176,7 @@ bool MidroAudioSyncPlaybackRenderer::processBlock (AudioBuffer<float>& buffer,
     for (int c = 0; c < numChannels; c++)
     {
         auto* channelData = buffer.getWritePointer (c);
-        for (int i = 0; i < numSamples; ++i)
+        for (unsigned int i = 0; i < numSamples; ++i)
             channelData[i] = outputData[i];
     }
 
