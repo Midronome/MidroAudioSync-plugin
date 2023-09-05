@@ -1,13 +1,13 @@
 # MidroAudioSync DAW Plugin
 
-This plugin is meant as an alternative to the Sync File Generator tool. it will generate the correct audio to send to your [Midronome](https://www.midronome.com/) in order to synchronize using "_AudioSync_" (see [the Midronome manual](https://www.midronome.com/support)).
+This plugin is meant as an alternative to the MidroSync File Generator tool. it will generate the correct audio to send to your [Midronome](https://www.midronome.com/) in order to synchronize using "_AudioSync_" (see [the Midronome manual](https://www.midronome.com/support)).
 
 
 
 ## Beta-test the plugin
 
 The plugin is still under development, but you can beta-test compiled versions, more information about this on [the Midronome Forum topic](https://forum.midronome.com/viewtopic.php?t=221).
-Note that the plugin can only run (for now at least) as an ARA plugin and will not run on every DAW (see the [current list of DAW supporting ARA](https://en.wikipedia.org/wiki/Audio_Random_Access#ARA_implementation))
+Note that the plugin can only run as an ARA plugin and will not run on every DAW (see the [current list of DAW supporting ARA](https://en.wikipedia.org/wiki/Audio_Random_Access#ARA_implementation))
 
 
 
