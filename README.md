@@ -1,6 +1,6 @@
 # MidroAudioSync DAW Plugin
 
-This plugin is meant as an alternative to the MidroSync File Generator tool. it will generate the correct audio to send to your [Midronome](https://www.midronome.com/) in order to synchronize using "_AudioSync_" (see [the Midronome manual](https://www.midronome.com/support)).
+This plugin is meant as an alternative to the MidroSync File Generator tool. it will generate the correct audio to send to your [Midronome](https://www.midronome.com/) in order to synchronize using "_MidroSync_" (see [the Midronome manual](https://www.midronome.com/support)).
 
 
 
